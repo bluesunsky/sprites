@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Sprites</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+<style>
+
+body {
+  background:#0f172a;
+}
+
+h1 {
+  color: white;
+  font-family:Poppins,'Helvetica Neue',Helvetica,Arial,sans-serif;
+  text-shadow: 0 5px 3px rgba(0, 0, 0, .2);
+  text-align:center;
+  margin: 0;
+}
+
+#sprites {
+  background:transparent !important;
+  display:flex;
+  flex-direction:column;
+  gap:0.75rem;
+  padding:0.75rem;
+  width: fit-content;
+}
+
+.sprite {
+  display:flex;
+  gap:0.75rem;
+}
+
+.card {
+ width:5rem;
+ background:#1e293b;
+ border-radius: 0.75rem;
+ overflow:hidden;
+ text-align:center;
+ cursor:pointer;
+
+ img {
+   display:block;
+   width: 100%;
+ }
+}
+
+.missing {
+    background-image: unset !important;
+
+    img {
+     filter: brightness(0);
+    }
+}
+
+.copy-btn {
+  position:fixed;
+  top:20px;
+  right:20px;
+  z-index:9999;
+  background:#3b82f6;
+  color:white;
+  border:none;
+  border-radius:8px;
+  padding:10px 16px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.copy-btn:hover {
+  opacity:.9;
+} 
+</style>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</head>
+<body>
+<div id="sprites">
+  <h1>Sunsky</h1>
+  {% for _, variantes in esprits %}
+  <div class="sprite">
+    {% for variante in variantes %}
+    <div
+      onclick="toggle(this)"
+      data-key="{{ variante.key }}"
+      class="card {% if not variante.possede %}missing{% endif %}"
+      style="background-image: url('{{ url_for('static', filename=variante.background) }}');"
+    >
+      <img src="{{ url_for('static', filename=variante.image) }}" alt="">
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+<button class="copy-btn" onclick="copierPNG()">Copier</button>
+<script>
+async function copierPNG() {
+    const zone = document.getElementById('sprites');
+
+    const canvas = await html2canvas(zone, {
+        backgroundColor: null,
+        scale: 2,
+        useCORS: true,
+        onclone: (doc) => {
+          doc.querySelectorAll('.missing img').forEach(img => {
+            img.style.opacity = '0';
+          });
+        }
+    });
+
+    canvas.toBlob(async (blob) => {
+        await navigator.clipboard.write([
+            new ClipboardItem({
+                'image/png': blob
+            })
+        ]);
+    });
+}
+
+async function toggle(el) {
+    const key = el.dataset.key;
+
+    const res = await fetch("/toggle", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ key })
+    });
+
+    const data = await res.json();
+
+    el.classList.toggle("missing", !data.value);
+}
+</script>
+</body>
+</html>
