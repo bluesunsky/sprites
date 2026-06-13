@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <title>Sprites</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 
 body {
@@ -25,11 +26,13 @@ h1 {
   gap:0.75rem;
   padding:0.75rem;
   width: fit-content;
+  max-width:100%;
+  box-sizing:border-box;
 }
 
 .sprite {
   display:flex;
-  gap:0.75rem;
+  gap:0.75rem;20:00 13/06/2026
 }
 
 .card {
@@ -39,19 +42,19 @@ h1 {
  overflow:hidden;
  text-align:center;
  cursor:pointer;
+}
 
- img {
-   display:block;
-   width: 100%;
- }
+.card img {
+  display:block;
+  width:100%;
 }
 
 .missing {
     background-image: unset !important;
+}
 
-    img {
-     filter: brightness(0);
-    }
+.missing img {
+  filter:brightness(0);
 }
 
 .copy-btn {
@@ -71,6 +74,21 @@ h1 {
 .copy-btn:hover {
   opacity:.9;
 } 
+
+@media (max-width: 768px) {
+  h1 {
+    font-size:1.25rem;
+  }
+
+  #sprites
+  {
+    width:100%;
+  }
+
+  .card {
+    width: 100%;
+  }
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
@@ -80,6 +98,7 @@ h1 {
   {% for _, variantes in esprits %}
   <div class="sprite">
     {% for variante in variantes %}
+    {% if variante %}
     <div
       onclick="toggle(this)"
       data-key="{{ variante.key }}"
@@ -88,6 +107,9 @@ h1 {
     >
       <img src="{{ url_for('static', filename=variante.image) }}" alt="">
     </div>
+    {% else %}
+    <div class="card"></div>
+    {% endif %}
     {% endfor %}
   </div>
   {% endfor %}

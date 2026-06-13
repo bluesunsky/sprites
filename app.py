@@ -73,6 +73,8 @@ def index():
                 "possede": possede,
                 "background": f"images/rarity_{rarity}.png",
               })
+            else:
+              variantes.append(None)
 
         sprites.append((sprite, variantes))
 
@@ -102,4 +104,4 @@ def toggle():
     return jsonify({"key": key, "value": new_value})
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
